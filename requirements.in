@@ -1,0 +1,13 @@
+# Core dependencies
+opencv-python==4.8.1.78
+Pillow==10.2.0
+pandas==2.2.0
+pyarrow==14.0.1
+beautifulsoup4==4.12.2
+gpxpy==1.6.0
+geopy==2.4.1
+gpx-converter==2.1.0
+exif==1.6.0
+
+# Development dependencies
+pip-tools==7.3.0
