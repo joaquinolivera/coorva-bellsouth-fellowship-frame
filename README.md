@@ -4,16 +4,16 @@ A comprehensive video processing system that extracts frames from multi-camera v
 
 ## Project Overview
 
-This project processes video footage from a four-camera vehicle setup (front right/left, side right/left), extracts frames at specified intervals, embeds GPS data from video metadata, and generates interactive map visualizations. The system is specifically designed for the Ituzaingó/Morón area in Argentina and handles camera synchronization, GPS tagging, and visualization of the collected data.
+This project processes video footage from a four-camera vehicle setup (front right/left, side right/left), extracts frames at specified intervals, embeds GPS data from video metadata, and generates interactive map visualizations. It is specifically designed for the Ituzaingó/Morón area in Argentina and handles camera synchronization, GPS tagging, and visualization of collected data.
 
 ## Key Features
 
-- Process videos from four-camera vehicle setups
-- Manual or automatic camera synchronization options
-- Extract frames at configurable frame rates (2, 4, 5, or 10 fps)
-- Extract and embed GPS metadata in frame images
-- Generate interactive street map visualizations showing all camera views
-- Automatic coordinate correction for Ituzaingó/Morón area (Argentina)
+- Supports four-camera vehicle setups.
+- Manual or automatic camera synchronization.
+- Configurable frame extraction rates (2, 4, 5, or 10 fps).
+- GPS metadata extraction and embedding into frames.
+- Interactive street map visualizations for camera views.
+- Automatic coordinate correction for the Ituzaingó/Morón area.
 
 ## Directory Structure
 
@@ -21,10 +21,10 @@ This project processes video footage from a four-camera vehicle setup (front rig
 fellowship_of_the_frame/
 ├── data/
 │   ├── Videos/
-│   │   ├── FD/  (Front Right Camera Videos)
-│   │   ├── FI/  (Front Left Camera Videos)
-│   │   ├── LD/  (Side Right Camera Videos)
-│   │   └── LI/  (Side Left Camera Videos)
+│   │   ├── FD/  # Front Right Camera
+│   │   ├── FI/  # Front Left Camera
+│   │   ├── LD/  # Side Right Camera
+│   │   └── LI/  # Side Left Camera
 │   └── Fotos/
 │       └── [output_folder]/
 │           ├── Imagenes_Frontal_Derecha/
@@ -34,7 +34,7 @@ fellowship_of_the_frame/
 ├── src/
 │   ├── auto_sync_videos.py
 │   ├── gps_frame_map_visualizer.py
-│   ├── check_dir_structure.py
+│   └── check_dir_structure.py
 ├── .gitignore
 ├── pyproject.toml
 ├── requirements.in
@@ -46,56 +46,69 @@ fellowship_of_the_frame/
 ## Prerequisites
 
 - Python 3.8 or later
-- ExifTool installed on your system ([Download from official site](https://exiftool.org/))
-- Git (for version control)
+- ExifTool ([Download](https://exiftool.org/))
+- Git
 
 ## Installation
 
-1. Clone the repository:
+### 1. Clone the repository
+
 ```bash
-git clone https://github.com/yourusername/fellowship_of_the_frame.git
+git clone https://github.com/joaquinolivera/coorva-bellsouth-fellowship-frame.git
 cd fellowship_of_the_frame
 ```
 
-2. Create and activate a virtual environment:
+### 2. Create and activate a virtual environment
+
 ```bash
 python -m venv fellow-env
-# On Windows
+# Windows
 fellow-env\Scripts\activate
-# On macOS/Linux
+# macOS/Linux
 source fellow-env/bin/activate
 ```
 
-3. Install dependencies:
+### 3. Install `pip-tools` (if not already installed)
+
+```bash
+pip install pip-tools
+```
+
+### 4. Generate dependencies
+
+Use `pip-compile` to generate `requirements.txt` from `requirements.in`:
+
+```bash
+pip-compile requirements.in
+```
+
+### 5. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Verify your setup:
+### 6. Verify project setup
+
 ```bash
 python src/check_dir_structure.py
 ```
 
-5. Create the required directories if they don't exist:
+### 7. Create required directories
+
 ```bash
 mkdir -p data/Videos/{FD,FI,LD,LI} data/Fotos
 ```
 
-## Usage Guide
+## Usage
 
-### 1. Check Directory Structure
-
-First, verify that your project directory structure is set up correctly:
+### Check Directory Structure
 
 ```bash
 python src/check_dir_structure.py
 ```
 
-This will check for the required directories and report any issues.
-
-### 2. Automatic Video Frame Extraction
-
-Use the automatic extraction script to process videos and extract frames:
+### Automatic Video Frame Extraction
 
 ```bash
 python src/auto_sync_videos.py data/Videos/[video_folder] data/Fotos/[output_folder] --start-frame [frames] --fps [rate]
@@ -105,14 +118,12 @@ python src/auto_sync_videos.py data/Videos/Camino_8 data/Fotos/C8 --start-frame 
 ```
 
 Parameters:
-- `video_folder`: Path to folder containing camera subfolders
-- `output_folder`: Path to output folder for extracted frames
-- `--start-frame`: Number of frames to skip from the beginning
-- `--fps`: Frames per second to extract (options: 2, 4, 5, or 10 fps)
+- `--start-frame`: Frames to skip initially.
+- `--fps`: Frames per second (2, 4, 5, 10).
 
-### 3. GPS Map Visualization
+### GPS Map Visualization
 
-Create an interactive map from the extracted frames with GPS data:
+Generate an interactive map from extracted GPS-tagged frames:
 
 ```bash
 python src/gps_frame_map_visualizer.py data/Fotos/[output_folder] --open
@@ -121,80 +132,70 @@ python src/gps_frame_map_visualizer.py data/Fotos/[output_folder] --open
 python src/gps_frame_map_visualizer.py data/Fotos/C8 --open
 ```
 
-Options:
-- `--output`, `-o`: Specify output HTML file path (default: street_map.html)
-- `--title`, `-t`: Set map title (default: "Ituzaingó/Morón Street Map")
-- `--open`: Automatically open the generated map in the default browser
+Optional parameters:
+- `-o`: Specify HTML output (default: street_map.html)
+- `-t`: Map title
+- `--open`: Open automatically in browser
 
 ## Technical Details
 
 - Input videos: 60 fps
-- GPS data frequency: 10 locations/second
-- Available output rates: 2, 4, 5, or 10 fps
-- Output image format: JPG with embedded GPS EXIF data
-- Default output resolution: 640x640 pixels
+- GPS data frequency: 10 locations/sec
+- Output rates: 2, 4, 5, or 10 fps
+- Output format: JPG with GPS EXIF data
+- Resolution: 640x640 pixels
 
-### Frame Extraction Process
+### Frame Extraction Workflow
 
-The frame extraction process works by:
-1. Reading GPS metadata from video files using ExifTool
-2. Sampling frames at intervals based on the requested output fps
-3. Automatically matching frames with corresponding GPS data
-4. Resizing frames to 640x640 square images
-5. Embedding GPS data in the output images
+1. Read GPS metadata with ExifTool.
+2. Extract frames at specified fps.
+3. Match frames with GPS data.
+4. Resize to 640x640.
+5. Embed GPS EXIF metadata.
 
-### GPS Map Visualization
+### GPS Map Workflow
 
-The map visualization:
-1. Reads GPS data from extracted frames
-2. Corrects coordinates for the Ituzaingó/Morón area if needed
-3. Creates an interactive HTML map with all camera views
-4. Draws a path line connecting all GPS points
-5. Shows camera views from all four cameras in popups
+1. Extract GPS data from frames.
+2. Correct local coordinates.
+3. Generate interactive HTML map.
+4. Display all camera views.
 
 ## Troubleshooting
 
-### Common Issues
+- **Missing ExifTool**:
 
-1. **Missing ExifTool**: Ensure ExifTool is installed and available in your PATH
-   ```bash
-   # Check if ExifTool is installed
-   exiftool -ver
-   ```
+```bash
+exiftool -ver
+```
 
-2. **Folium Import Error**: Make sure Folium is installed correctly
-   ```bash
-   pip install folium
-   ```
+- **Folium or GPSPhoto Import Errors**:
 
-3. **GPSPhoto Import Error**: Install the GPSPhoto package
-   ```bash
-   pip install GPSPhoto
-   ```
+```bash
+pip install folium GPSPhoto
+```
 
-4. **GPS Data Not Found**: Verify your videos contain GPS metadata
-   ```bash
-   # Check if a video contains GPS data
-   exiftool -G3 -s -GPS* path/to/video.mp4
-   ```
+- **No GPS Data**: Ensure your videos have GPS metadata:
 
-5. **Images Not Showing in Map**: Check browser security settings for local file access
+```bash
+exiftool -G3 -s -GPS* path/to/video.mp4
+```
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a branch (`git checkout -b feature/your-feature`)
+3. Commit changes (`git commit -m 'Your feature description'`)
+4. Push changes (`git push origin feature/your-feature`)
+5. Open a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Licensed under the MIT License.
 
 ## Acknowledgements
 
-- [OpenCV](https://opencv.org/) for video processing
-- [ExifTool](https://exiftool.org/) for metadata extraction
-- [GPSPhoto](https://pypi.org/project/GPSPhoto/) for GPS tagging
-- [Folium](https://python-visualization.github.io/folium/) for map visualization
+- [OpenCV](https://opencv.org/) - Video processing
+- [ExifTool](https://exiftool.org/) - Metadata extraction
+- [GPSPhoto](https://pypi.org/project/GPSPhoto/) - GPS tagging
+- [Folium](https://python-visualization.github.io/folium/) - Map visualization
+
